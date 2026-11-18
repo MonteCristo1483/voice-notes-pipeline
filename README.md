@@ -1,5 +1,7 @@
 # Voice Notes Pipeline
 
+![CI](https://github.com/MonteCristo1483/voice-notes-pipeline/actions/workflows/ci.yml/badge.svg)
+
 Turn voice recordings into structured Obsidian notes — locally, on a schedule, without a subscription.
 
 Audio is transcribed by Whisper on your machine. The transcript is then summarized into a structured note (personal note or work meeting), tagged, and written into a vault. A watcher can process new files automatically; failures are isolated instead of looping forever.
@@ -49,7 +51,7 @@ Requirements:
 - Ollama with a chat model, **or** an API key for an OpenAI-compatible provider
 
 ```bash
-git clone https://github.com/<you>/voice-notes-pipeline.git
+git clone https://github.com/MonteCristo1483/voice-notes-pipeline.git
 cd voice-notes-pipeline
 python -m venv .venv
 .venv\Scripts\activate          # Windows
