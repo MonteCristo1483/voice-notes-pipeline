@@ -1,0 +1,37 @@
+# Environments
+.venv/
+venv/
+env/
+
+# Secrets and local config
+.env
+*.key
+*_key.txt
+llm_config.json
+
+# Runtime data (never commit recordings, notes or logs)
+work/
+inbox/
+vault/
+eval/out/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+tmp-*/
+
