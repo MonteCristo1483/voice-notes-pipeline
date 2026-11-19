@@ -43,10 +43,10 @@ def process_media(
     if not transcript.strip():
         raise RuntimeError("transcript is empty")
 
-    body = summarize(settings, transcript, profile)
+    body_title, body = summarize(settings, transcript, profile, fallback_title=media.stem)
     note_path = write_note(
         settings,
-        base_name=media.stem,
+        title=body_title,
         body=body,
         transcript=transcript,
         media_file=media,

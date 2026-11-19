@@ -15,7 +15,7 @@ def test_schema_example_mirrors_schema_shape():
 def test_personal_schema_example_is_flat():
     example = schema_example(PERSONAL_SHORT_SCHEMA)
 
-    assert set(example) == {"essence", "facts", "actions", "tags"}
+    assert set(example) == {"title", "essence", "facts", "actions", "tags"}
 
 
 def test_parse_json_text_accepts_code_fences():

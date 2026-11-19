@@ -10,7 +10,7 @@ from typing import Any
 from . import prompts
 from .config import Settings
 from .providers import generate_json
-from .render import render_personal_long, render_personal_short, render_work
+from .render import render_personal_long, render_personal_short, render_work, strip_cjk
 from .schemas import (
     PERSONAL_EXTRACT_SCHEMA,
     PERSONAL_LONG_SCHEMA,
@@ -101,8 +101,23 @@ def _reduce(
     return parts[0]
 
 
-def summarize(settings: Settings, transcript: str, profile: str = "personal") -> str:
-    """Produce the note body (without the header/footer added by write_note)."""
+def _clean_title(value: Any, fallback: str) -> str:
+    title = re.sub(r"\s+", " ", strip_cjk(str(value or ""))).strip()
+    title = title.strip("«»\"'").strip(". ").lstrip("#*- ").strip()
+    title = re.sub(r'[<>:"/\\|?*«»“”„]', " ", title)
+    title = re.sub(r"\s+", " ", title).strip()
+    if len(title) > 90:
+        title = title[:90].rsplit(" ", 1)[0].strip()
+    return title or fallback
+
+
+def summarize(
+    settings: Settings,
+    transcript: str,
+    profile: str = "personal",
+    fallback_title: str = "Note",
+) -> tuple[str, str]:
+    """Return ``(title, markdown body)`` for the note."""
     if profile not in prompts.SYSTEM_PROMPTS:
         raise ValueError(f"unknown profile: {profile}")
 
@@ -114,27 +129,26 @@ def summarize(settings: Settings, transcript: str, profile: str = "personal") ->
 
     if profile == "work":
         if len(text) < single_limit:
-            return render_work(
-                generate_json(settings, prompts.WORK_FIELDS + text, WORK_SCHEMA, system, 0.3)
-            )
+            data = generate_json(settings, prompts.WORK_FIELDS + text, WORK_SCHEMA, system, 0.3)
+            return _clean_title(data.get("title"), fallback_title), render_work(data)
         chunks = split_chunks(text)
         log.info("long transcript: %s chunks", len(chunks))
         parts = _extract_chunks(settings, chunks, prompts.WORK_CHUNK, WORK_EXTRACT_SCHEMA, system)
         merged = _reduce(settings, parts, WORK_SCHEMA, system, prompts.WORK_MERGE)
-        return render_work(merged)
+        return _clean_title(merged.get("title"), fallback_title), render_work(merged)
 
     if len(text) < settings.personal_short_limit:
-        return render_personal_short(
-            generate_json(settings, prompts.PERSONAL_SHORT_FIELDS + text,
-                          PERSONAL_SHORT_SCHEMA, system, 0.4)
+        data = generate_json(
+            settings, prompts.PERSONAL_SHORT_FIELDS + text, PERSONAL_SHORT_SCHEMA, system, 0.4
         )
+        return _clean_title(data.get("title"), fallback_title), render_personal_short(data)
     if len(text) < single_limit:
-        return render_personal_long(
-            generate_json(settings, prompts.PERSONAL_LONG_FIELDS + text,
-                          PERSONAL_LONG_SCHEMA, system, 0.4)
+        data = generate_json(
+            settings, prompts.PERSONAL_LONG_FIELDS + text, PERSONAL_LONG_SCHEMA, system, 0.4
         )
+        return _clean_title(data.get("title"), fallback_title), render_personal_long(data)
     chunks = split_chunks(text)
     log.info("long transcript: %s chunks", len(chunks))
     parts = _extract_chunks(settings, chunks, prompts.PERSONAL_CHUNK, PERSONAL_EXTRACT_SCHEMA, system)
     merged = _reduce(settings, parts, PERSONAL_LONG_SCHEMA, system, prompts.PERSONAL_MERGE)
-    return render_personal_long(merged)
+    return _clean_title(merged.get("title"), fallback_title), render_personal_long(merged)

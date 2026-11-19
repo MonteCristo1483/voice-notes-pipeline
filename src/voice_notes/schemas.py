@@ -33,6 +33,7 @@ TOPIC = {
 WORK_SCHEMA = {
     "type": "object",
     "properties": {
+        "title": {"type": "string"},
         "essence": {"type": "string"},
         "topics": {"type": "array", "items": TOPIC},
         "decisions": {"type": "array", "items": DECISION},
@@ -42,8 +43,8 @@ WORK_SCHEMA = {
         "materials": STRING_LIST,
         "tags": STRING_LIST,
     },
-    "required": ["essence", "topics", "decisions", "tasks", "questions", "facts",
-                 "materials", "tags"],
+    "required": ["title", "essence", "topics", "decisions", "tasks", "questions",
+                 "facts", "materials", "tags"],
 }
 
 WORK_EXTRACT_SCHEMA = {
@@ -62,24 +63,26 @@ WORK_EXTRACT_SCHEMA = {
 PERSONAL_SHORT_SCHEMA = {
     "type": "object",
     "properties": {
+        "title": {"type": "string"},
         "essence": {"type": "string"},
         "facts": STRING_LIST,
         "actions": STRING_LIST,
         "tags": STRING_LIST,
     },
-    "required": ["essence", "facts", "actions", "tags"],
+    "required": ["title", "essence", "facts", "actions", "tags"],
 }
 
 PERSONAL_LONG_SCHEMA = {
     "type": "object",
     "properties": {
+        "title": {"type": "string"},
         "essence": {"type": "string"},
         "main": STRING_LIST,
         "actions": STRING_LIST,
         "facts": STRING_LIST,
         "tags": STRING_LIST,
     },
-    "required": ["essence", "main", "actions", "facts", "tags"],
+    "required": ["title", "essence", "main", "actions", "facts", "tags"],
 }
 
 PERSONAL_EXTRACT_SCHEMA = {

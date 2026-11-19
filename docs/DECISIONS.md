@@ -97,3 +97,11 @@ Short ADR-style notes explaining why the code looks the way it does. Most of the
 **Decision.** Run `postprocess.py` with `PYTHONIOENCODING=utf-8`, using `python.exe` from the same environment. Treat a missing output file as "no diarization" and fall back to plain SRT instead of failing the transcription.
 
 **Consequences.** Diarization failures degrade the note (no speaker grouping) instead of losing the recording.
+
+## ADR-013: Topic title and a minimal header
+
+**Context.** Notes were named after the source file (`2026-11-19 07-37-53`, `Стандартная запись 9`), which says nothing about the content. The header also carried the processing date, source file and transcript size — noise for an Obsidian knowledge base.
+
+**Decision.** The model returns a `title` field (3–7 words, based on the main topic). It becomes both the H1 and the file name. The header keeps only the recording date: parsed from the file name for OBS-style timestamps, otherwise the file modification time. Source and word count were removed.
+
+**Consequences.** Notes are browsable by topic. Title collisions get a numeric suffix; an empty title falls back to the file stem. The original file name is still recoverable from the vault's `processed/YYYY-MM` folder.

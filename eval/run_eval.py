@@ -45,9 +45,9 @@ def main(argv: list[str]) -> int:
         filename, profile = CASES[name]
         transcript = (FIXTURES / filename).read_text(encoding="utf-8")
         print(f"\n=== {name} ({profile}, {len(transcript)} chars) ===")
-        note = summarize(settings, transcript, profile)
+        title, note = summarize(settings, transcript, profile, fallback_title=name)
         target = OUT / f"{name}.md"
-        target.write_text(note + "\n", encoding="utf-8")
+        target.write_text(f"# {title}\n\n{note}\n", encoding="utf-8")
         print(f"-> {target}")
     return 0
 

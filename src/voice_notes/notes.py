@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -15,9 +16,20 @@ def safe_filename(name: str) -> str:
     return INVALID_FILENAME.sub("_", name).strip() or "transcript"
 
 
+def note_datetime(media_file: Path) -> datetime:
+    """Recording date: from the filename (OBS) or the file modification time."""
+    match = re.search(r"(\d{4})-(\d{2})-(\d{2})[ _](\d{2})-(\d{2})-(\d{2})", media_file.name)
+    if match:
+        try:
+            return datetime(*map(int, match.groups()))
+        except ValueError:
+            pass
+    return datetime.fromtimestamp(os.path.getmtime(media_file))
+
+
 def write_note(
     settings: Settings,
-    base_name: str,
+    title: str,
     body: str,
     transcript: str,
     media_file: Path,
@@ -25,26 +37,23 @@ def write_note(
 ) -> Path:
     """Write the Markdown note and return its path.
 
-    The note contains a small header, the generated body, and the full
-    transcript inside a collapsed <details> block for reference.
+    The file name and the H1 come from the model-generated topic title. The
+    header keeps only the recording date — no source path or word count.
     """
     notes_dir = settings.vaults[profile] / "AI" / "Транскрипты"
     notes_dir.mkdir(parents=True, exist_ok=True)
 
-    title = safe_filename(base_name)
-    path = notes_dir / f"{title}.md"
+    filename = safe_filename(title)
+    path = notes_dir / f"{filename}.md"
     counter = 2
     while path.exists():
-        path = notes_dir / f"{title} ({counter}).md"
+        path = notes_dir / f"{filename} ({counter}).md"
         counter += 1
 
-    processed_at = datetime.now().strftime("%Y-%m-%d %H:%M")
-    words = len(transcript.split())
+    recorded_at = note_datetime(media_file).strftime("%Y-%m-%d %H:%M")
     note = (
-        f"# {base_name}\n\n"
-        f"**Дата обработки:** {processed_at}  \n"
-        f"**Источник:** `{media_file.name}`  \n"
-        f"**Объём транскрипта:** ~{words} слов\n\n"
+        f"# {title}\n\n"
+        f"**Дата:** {recorded_at}\n\n"
         f"{body}\n\n"
         f"---\n\n"
         f"<details><summary>Полный транскрипт</summary>\n\n{transcript}\n\n</details>\n"

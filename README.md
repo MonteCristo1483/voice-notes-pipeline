@@ -14,6 +14,7 @@ Voice memos and meeting recordings pile up because rewriting them by hand is bor
 
 ## Features
 
+- **Topic titles:** the note is named after its main topic, not the audio file; the header keeps only the recording date.
 - **Two profiles:** `personal` (thoughts, ideas, diaries) and `work` (meetings, decisions, tasks).
 - **Local transcription:** Faster-Whisper-XXL, CUDA, optional speaker diarization.
 - **Structured output:** the LLM fills a JSON schema; Markdown is rendered by code. Empty sections, stray tags and broken formatting cannot happen.
@@ -101,6 +102,10 @@ See [docs/PROVIDERS.md](docs/PROVIDERS.md) for endpoint examples and model notes
 Work profile, generated from the synthetic fixture in `eval/fixtures/meeting.txt`:
 
 ```markdown
+# Перенос дедлайна и тариф сервера
+
+**Дата:** 2026-01-15 10:00
+
 ## Суть
 Обсудили перенос дедлайна из-за незавершённой интеграции с оплатой.
 Демо клиенту — в четверг в 10 утра, сервер — более дорогой тариф с бэкапами.
