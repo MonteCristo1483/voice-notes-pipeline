@@ -105,3 +105,11 @@ Short ADR-style notes explaining why the code looks the way it does. Most of the
 **Decision.** The model returns a `title` field (3–7 words, based on the main topic). It becomes both the H1 and the file name. The header keeps only the recording date: parsed from the file name for OBS-style timestamps (`YYYY-MM-DD HH-MM-SS`) and telemost-style names (`DD.MM.YY HH-MM-SS`), otherwise the file modification time. Source and word count were removed.
 
 **Consequences.** Notes are browsable by topic. Title collisions get a numeric suffix; an empty title falls back to the file stem. The original file name is still recoverable from the vault's `processed/YYYY-MM` folder.
+
+## ADR-014: Domain glossary for ASR artifacts
+
+**Context.** Speech recognition consistently mangles domain acronyms: the same system appeared as `Япур`, `ЯПУР` and `EPUR` instead of `ЕПУР`. The model faithfully preserved the wrong form in titles, notes and transcripts.
+
+**Decision.** An optional `glossary.json` maps case-insensitive regexes to canonical terms and is applied to the transcript before summarization and before it is written into the note.
+
+**Consequences.** Recurring terminology is stable without retraining Whisper. The glossary is user-specific and git-ignored; `glossary.example.json` documents the format. Over-broad patterns can rewrite legitimate words, so patterns should be anchored.

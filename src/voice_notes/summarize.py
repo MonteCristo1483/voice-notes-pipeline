@@ -9,6 +9,7 @@ from typing import Any
 
 from . import prompts
 from .config import Settings
+from .glossary import apply_glossary, load_glossary
 from .providers import generate_json
 from .render import render_personal_long, render_personal_short, render_work, strip_cjk
 from .schemas import (
@@ -124,7 +125,9 @@ def summarize(
     system = prompts.SYSTEM_PROMPTS[profile]
     provider = "cloud" if settings.cloud_enabled else "local"
     log.info("Step 3/3: summarizing with %s model (profile %s)", provider, profile)
-    text = normalize_speakers(transcript.strip())
+    text = apply_glossary(
+        normalize_speakers(transcript.strip()), load_glossary(settings.glossary_file)
+    )
     single_limit = settings.cloud_single_limit if settings.cloud_enabled else settings.single_pass_limit
 
     if profile == "work":

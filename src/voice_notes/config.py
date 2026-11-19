@@ -97,6 +97,7 @@ class Settings:
     min_file_age_personal: int = 120
     min_file_age_work: int = 300
     seen_file: Path = field(default=PROJECT_ROOT / "seen.json")
+    glossary_file: Path = field(default=PROJECT_ROOT / "glossary.json")
 
     log_file: Path = field(default=PROJECT_ROOT / "watcher.log")
 
@@ -144,5 +145,6 @@ def load_settings(env_file: Path = ENV_FILE) -> Settings:
         min_file_age_personal=_env_int("MIN_FILE_AGE_PERSONAL", 120),
         min_file_age_work=_env_int("MIN_FILE_AGE_WORK", 300),
         seen_file=_env_path("SEEN_FILE", PROJECT_ROOT / "seen.json"),
+        glossary_file=_env_path("GLOSSARY_FILE", PROJECT_ROOT / "glossary.json"),
         log_file=_env_path("LOG_FILE", PROJECT_ROOT / "watcher.log"),
     )

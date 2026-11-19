@@ -8,6 +8,7 @@ env/
 *.key
 *_key.txt
 llm_config.json
+glossary.json
 
 # Runtime data (never commit recordings, notes or logs)
 work/

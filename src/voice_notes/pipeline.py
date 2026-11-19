@@ -7,6 +7,7 @@ import urllib.request
 from pathlib import Path
 
 from .config import Settings
+from .glossary import apply_glossary, load_glossary
 from .notes import write_note
 from .summarize import summarize
 from .transcribe import TooShortError, transcribe
@@ -39,7 +40,10 @@ def process_media(
 
     media = media.resolve()
     minimum = 0 if allow_short else settings.min_duration_sec
-    transcript = transcribe(settings, media, min_seconds=minimum)
+    transcript = apply_glossary(
+        transcribe(settings, media, min_seconds=minimum),
+        load_glossary(settings.glossary_file),
+    )
     if not transcript.strip():
         raise RuntimeError("transcript is empty")
 

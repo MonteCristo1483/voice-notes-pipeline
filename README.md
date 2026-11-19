@@ -15,6 +15,7 @@ Voice memos and meeting recordings pile up because rewriting them by hand is bor
 ## Features
 
 - **Topic titles:** the note is named after its main topic, not the audio file; the header keeps only the recording date.
+- **Glossary for ASR:** a small JSON of regex replacements (`Япур`, `EPUR` → `ЕПУР`) fixes recurring recognition errors before summarization.
 - **Two profiles:** `personal` (thoughts, ideas, diaries) and `work` (meetings, decisions, tasks).
 - **Local transcription:** Faster-Whisper-XXL, CUDA, optional speaker diarization.
 - **Structured output:** the LLM fills a JSON schema; Markdown is rendered by code. Empty sections, stray tags and broken formatting cannot happen.
@@ -94,6 +95,7 @@ Everything lives in `.env` (see `.env.example`).
 | `LOCAL_MODEL`, `OLLAMA_URL` | Local fallback |
 | `LLM_API_BASE`, `LLM_API_KEY`, `LLM_MODEL` | OpenAI-compatible endpoint |
 | `MIN_DURATION_SEC` | Files shorter than this go to `skipped/` (default 60) |
+| `GLOSSARY_FILE` | Optional JSON of ASR term replacements |
 
 See [docs/PROVIDERS.md](docs/PROVIDERS.md) for endpoint examples and model notes.
 

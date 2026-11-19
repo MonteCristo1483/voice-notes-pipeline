@@ -26,11 +26,12 @@
 6. Before Whisper starts, the local LLM is unloaded from VRAM (`keep_alive: 0`) when the provider is local.
 7. Whisper writes SRT. A valid SRT is accepted even if the process exits non-zero.
 8. `postprocess.py` groups subtitles by speaker. It runs with `PYTHONIOENCODING=utf-8` under a console Python: the script prints emoji and dies on cp1251 when piped from `pythonw.exe`. If it produces nothing, plain SRT text is used.
-9. Speaker labels are normalized: one speaker → labels removed; several → `Speaker N:` inline.
-10. `summarize()` sends the transcript (or chunks) to the configured LLM with a JSON schema.
-11. `render_*()` builds Markdown from validated fields.
-12. `write_note()` uses the model-generated topic title as the file name and H1, keeps only the recording date (from the filename in ISO or Russian `DD.MM.YY HH-MM-SS` form, otherwise from the file mtime), and appends the full transcript in a collapsed block.
-13. The source file moves to `processed/YYYY-MM/`.
+9. A glossary of domain terms is applied to the transcript (for example, ASR artifacts are mapped to canonical names).
+10. Speaker labels are normalized: one speaker → labels removed; several → `Speaker N:` inline.
+11. `summarize()` sends the transcript (or chunks) to the configured LLM with a JSON schema.
+12. `render_*()` builds Markdown from validated fields.
+13. `write_note()` uses the model-generated topic title as the file name and H1, keeps only the recording date (from the filename in ISO or Russian `DD.MM.YY HH-MM-SS` form, otherwise from the file mtime), and appends the full transcript in a collapsed block.
+14. The source file moves to `processed/YYYY-MM/`.
 
 ## State machine for an input file
 
