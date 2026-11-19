@@ -18,7 +18,8 @@ Voice memos and meeting recordings pile up because rewriting them by hand is bor
 - **Local transcription:** Faster-Whisper-XXL, CUDA, optional speaker diarization.
 - **Structured output:** the LLM fills a JSON schema; Markdown is rendered by code. Empty sections, stray tags and broken formatting cannot happen.
 - **Providers:** local Ollama *or* any OpenAI-compatible API. Cloud is preferred when configured; local is the fallback.
-- **Watcher:** waits for files to stop growing, moves results to `processed/YYYY-MM`, short files to `skipped/`, failures to `quarantine/`.
+- **Watcher:** waits for files to stop growing, ignores records younger than 2–5 minutes (cloud sync writes in parts), moves results to `processed/YYYY-MM`, short or duplicate files to `skipped/`, failures to `quarantine/`.
+- **Idempotent:** a SHA-1 registry prevents the same recording from being processed again when a sync client re-uploads it.
 - **Long recordings:** map-reduce over chunks with batched merging, so a three-hour meeting does not overflow the context.
 - **Quality harness:** synthetic fixtures to compare prompts and models without touching a real vault.
 - **No magic:** standard library only, plain Markdown output, readable logs.

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import shutil
 import subprocess
@@ -55,6 +56,16 @@ def normalize_speakers(text: str) -> str:
 def wav_duration_seconds(path: Path) -> float:
     """Exact duration for a WAV produced by :func:`normalize_to_wav`."""
     return path.stat().st_size / WAV_BYTES_PER_SEC
+
+
+def console_python() -> str:
+    """Use python.exe for child scripts even when the watcher runs under pythonw."""
+    exe = sys.executable
+    if exe.lower().endswith("pythonw.exe"):
+        candidate = exe[: -len("pythonw.exe")] + "python.exe"
+        if Path(candidate).exists():
+            return candidate
+    return exe
 
 
 def _resolve_tool(value: str, whisper_dir: Path | None) -> str:
@@ -179,9 +190,13 @@ def _postprocess(settings: Settings, srt: Path, work_dir: Path) -> str | None:
 
     target = work_dir / (srt.stem + "_grouped.txt")
     log.info("Step 2/3: grouping subtitles by speaker")
+    env = os.environ.copy()
+    # The bundled script prints emoji; without UTF-8 a piped child under a
+    # cp1251 console dies with UnicodeEncodeError before writing its output.
+    env["PYTHONIOENCODING"] = "utf-8"
     subprocess.run(
-        [sys.executable, str(script), str(srt), str(target)],
-        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        [console_python(), str(script), str(srt), str(target)],
+        capture_output=True, text=True, encoding="utf-8", errors="replace", env=env,
     )
     if not target.exists():
         # Very short recordings often produce no diarization output.

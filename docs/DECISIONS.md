@@ -73,3 +73,27 @@ Short ADR-style notes explaining why the code looks the way it does. Most of the
 **Decision.** Split on paragraph boundaries with overlap, summarize each chunk into the same schema subset, then merge in batches (max 6 summaries locally, 20 in the cloud, bounded by characters).
 
 **Consequences.** Long recordings stay within context and keep details. The cost is more requests and a small risk of duplication at chunk boundaries, mitigated by the overlap and deduplication in the renderer.
+
+## ADR-010: Minimum file age before processing
+
+**Context.** A work recording arrived through cloud sync (Remotely Save/WebDAV) in parts: a 1.3 MB fragment was written first, then the full 2.4 MB file minutes later. Size-stability checks over a few seconds were not enough — the fragment was processed and a note was built from truncated audio.
+
+**Decision.** Ignore files whose modification time is younger than `MIN_FILE_AGE_PERSONAL` (default 120 s) or `MIN_FILE_AGE_WORK` (default 300 s). Work files get a longer window because cloud sync is slower and chunkier than Syncthing.
+
+**Consequences.** Notes appear a couple of minutes later. In exchange, truncated recordings are not summarized.
+
+## ADR-011: Content-hash deduplication
+
+**Context.** After a failure, the file was quarantined at home — but the source file still existed on the work laptop, so the next sync uploaded it again. The watcher retried the same broken recording, and even after a fix would have produced duplicate notes.
+
+**Decision.** Remember SHA-1 of every handled file in `seen.json` (processed, skipped or quarantined). A file with a known hash moves to `skipped/`.
+
+**Consequences.** Idempotent processing across sync loops and renames. The registry is local state, git-ignored; deleting it re-enables processing of old files.
+
+## ADR-012: Child scripts run with UTF-8 and a console Python
+
+**Context.** The watcher autostarts under `pythonw.exe`. The bundled `postprocess.py` prints emoji; with piped stdout encoded as cp1251 it raised `UnicodeEncodeError` before writing the grouped transcript, and the whole recording was treated as failed.
+
+**Decision.** Run `postprocess.py` with `PYTHONIOENCODING=utf-8`, using `python.exe` from the same environment. Treat a missing output file as "no diarization" and fall back to plain SRT instead of failing the transcription.
+
+**Consequences.** Diarization failures degrade the note (no speaker grouping) instead of losing the recording.

@@ -94,6 +94,9 @@ class Settings:
     cloud_single_limit: int = 100_000
     merge_batch_chars: int = 12_000
     cloud_merge_chars: int = 60_000
+    min_file_age_personal: int = 120
+    min_file_age_work: int = 300
+    seen_file: Path = field(default=PROJECT_ROOT / "seen.json")
 
     log_file: Path = field(default=PROJECT_ROOT / "watcher.log")
 
@@ -138,5 +141,8 @@ def load_settings(env_file: Path = ENV_FILE) -> Settings:
         cloud_single_limit=_env_int("CLOUD_SINGLE_LIMIT", 100_000),
         merge_batch_chars=_env_int("MERGE_BATCH_CHARS", 12_000),
         cloud_merge_chars=_env_int("CLOUD_MERGE_CHARS", 60_000),
+        min_file_age_personal=_env_int("MIN_FILE_AGE_PERSONAL", 120),
+        min_file_age_work=_env_int("MIN_FILE_AGE_WORK", 300),
+        seen_file=_env_path("SEEN_FILE", PROJECT_ROOT / "seen.json"),
         log_file=_env_path("LOG_FILE", PROJECT_ROOT / "watcher.log"),
     )
