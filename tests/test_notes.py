@@ -25,6 +25,13 @@ def test_note_datetime_prefers_date_from_filename(tmp_path):
     assert note_datetime(media) == datetime(2026, 11, 19, 7, 37, 53)
 
 
+def test_note_datetime_parses_russian_style_filename(tmp_path):
+    media = tmp_path / "Встреча в Телемосте 09.11.26 16-59-19 — запись.webm"
+    media.write_bytes(b"x")
+
+    assert note_datetime(media) == datetime(2026, 11, 9, 16, 59, 19)
+
+
 def test_note_datetime_falls_back_to_mtime(tmp_path):
     media = tmp_path / "Стандартная запись 9.mp3"
     media.write_bytes(b"x")

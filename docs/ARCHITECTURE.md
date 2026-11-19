@@ -29,7 +29,7 @@
 9. Speaker labels are normalized: one speaker → labels removed; several → `Speaker N:` inline.
 10. `summarize()` sends the transcript (or chunks) to the configured LLM with a JSON schema.
 11. `render_*()` builds Markdown from validated fields.
-12. `write_note()` uses the model-generated topic title as the file name and H1, keeps only the recording date (from the filename when it contains a timestamp, otherwise from the file mtime), and appends the full transcript in a collapsed block.
+12. `write_note()` uses the model-generated topic title as the file name and H1, keeps only the recording date (from the filename in ISO or Russian `DD.MM.YY HH-MM-SS` form, otherwise from the file mtime), and appends the full transcript in a collapsed block.
 13. The source file moves to `processed/YYYY-MM/`.
 
 ## State machine for an input file

@@ -17,11 +17,20 @@ def safe_filename(name: str) -> str:
 
 
 def note_datetime(media_file: Path) -> datetime:
-    """Recording date: from the filename (OBS) or the file modification time."""
+    """Recording date: from the filename (ISO or DD.MM.YY), else file mtime."""
     match = re.search(r"(\d{4})-(\d{2})-(\d{2})[ _](\d{2})-(\d{2})-(\d{2})", media_file.name)
     if match:
         try:
             return datetime(*map(int, match.groups()))
+        except ValueError:
+            pass
+    match = re.search(r"(\d{2})\.(\d{2})\.(\d{2,4})[ _](\d{2})-(\d{2})-(\d{2})", media_file.name)
+    if match:
+        day, month, year, hour, minute, second = map(int, match.groups())
+        if year < 100:
+            year += 2000
+        try:
+            return datetime(year, month, day, hour, minute, second)
         except ValueError:
             pass
     return datetime.fromtimestamp(os.path.getmtime(media_file))
